@@ -1,9 +1,10 @@
 import { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
-import { Plus, Shield, Download, Upload } from 'lucide-react';
+import { Plus, Shield, Download, Upload, Sparkles } from 'lucide-react';
 import { TOTPCard } from '@/components/TOTPCard';
 import { AddAccountDialog } from '@/components/AddAccountDialog';
+import { ThemeToggle } from '@/components/ThemeToggle';
 import { type TOTPAccount } from '@/lib/totp';
 import { toast } from '@/hooks/use-toast';
 
@@ -93,41 +94,63 @@ const Index = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-background via-accent/5 to-primary/5">
-      <div className="container mx-auto px-4 py-8 max-w-2xl">
+    <div className="min-h-screen bg-gradient-to-br from-background via-accent/5 to-primary/5 relative overflow-hidden">
+      {/* Animated background elements */}
+      <div className="absolute inset-0 overflow-hidden pointer-events-none">
+        <div className="absolute -top-40 -right-40 w-80 h-80 bg-primary/5 rounded-full animate-float" />
+        <div className="absolute -bottom-40 -left-40 w-80 h-80 bg-accent/10 rounded-full animate-float" style={{ animationDelay: '2s' }} />
+        <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-primary/3 rounded-full animate-float" style={{ animationDelay: '4s' }} />
+      </div>
+      
+      <div className="container mx-auto px-4 py-8 max-w-2xl relative z-10">
+        {/* Theme Toggle */}
+        <div className="absolute top-4 right-4">
+          <ThemeToggle />
+        </div>
+
         {/* Header */}
-        <div className="text-center mb-8">
+        <div className="text-center mb-8 animate-fade-in">
           <div className="flex items-center justify-center gap-3 mb-4">
-            <div className="p-3 rounded-2xl bg-primary/10 backdrop-blur-sm">
-              <Shield className="h-8 w-8 text-primary" />
+            <div className="p-4 rounded-3xl bg-primary/10 backdrop-blur-sm hover-glow hover:animate-pulse-glow transition-all duration-300 hover:scale-110">
+              <Shield className="h-10 w-10 text-primary animate-float" />
             </div>
-            <h1 className="text-4xl font-bold bg-gradient-to-r from-primary to-primary/70 bg-clip-text text-transparent">
+            <h1 className="text-5xl font-bold text-gradient-primary animate-shimmer">
               Alpha
             </h1>
+            <Sparkles className="h-6 w-6 text-primary animate-bounce-gentle" />
           </div>
-          <p className="text-muted-foreground text-lg">
+          <p className="text-muted-foreground text-xl animate-slide-up">
             Autenticador multifator seguro e elegante
           </p>
         </div>
 
         {/* Action Buttons */}
-        <div className="flex flex-wrap gap-3 mb-8 justify-center">
+        <div className="flex flex-wrap gap-3 mb-8 justify-center animate-slide-up" style={{ animationDelay: '0.2s' }}>
           <Button
             onClick={() => setAddDialogOpen(true)}
-            className="bg-primary-gradient hover:shadow-lg transition-all duration-300"
+            className="bg-primary-gradient hover:shadow-lg transition-all duration-300 hover:scale-105 hover-glow relative overflow-hidden group"
           >
-            <Plus className="h-4 w-4 mr-2" />
-            Adicionar Conta
+            <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-1000" />
+            <Plus className="h-4 w-4 mr-2 relative z-10" />
+            <span className="relative z-10">Adicionar Conta</span>
           </Button>
           
           {accounts.length > 0 && (
             <>
-              <Button variant="outline" onClick={exportAccounts}>
+              <Button 
+                variant="outline" 
+                onClick={exportAccounts}
+                className="hover-lift hover-glow transition-all duration-300 hover:border-primary/50"
+              >
                 <Download className="h-4 w-4 mr-2" />
                 Exportar
               </Button>
               
-              <Button variant="outline" asChild>
+              <Button 
+                variant="outline" 
+                asChild
+                className="hover-lift hover-glow transition-all duration-300 hover:border-primary/50"
+              >
                 <label className="cursor-pointer">
                   <Upload className="h-4 w-4 mr-2" />
                   Importar
@@ -144,39 +167,48 @@ const Index = () => {
         </div>
 
         {/* Accounts List */}
-        <div className="space-y-4">
+        <div className="space-y-6 animate-slide-up" style={{ animationDelay: '0.4s' }}>
           {accounts.length === 0 ? (
-            <Card className="p-12 text-center border-dashed border-2 border-primary/20 bg-gradient-to-br from-accent/20 to-transparent">
-              <Shield className="h-16 w-16 text-primary/40 mx-auto mb-4" />
-              <h3 className="text-xl font-semibold mb-2 text-muted-foreground">
+            <Card className="p-12 text-center border-dashed border-2 border-primary/20 bg-gradient-to-br from-accent/20 to-transparent hover-glow hover-lift transition-all duration-500 glass-morphism">
+              <Shield className="h-20 w-20 text-primary/40 mx-auto mb-6 animate-float" />
+              <h3 className="text-2xl font-semibold mb-4 text-muted-foreground">
                 Nenhuma conta adicionada
               </h3>
-              <p className="text-muted-foreground mb-6">
+              <p className="text-muted-foreground mb-8 text-lg">
                 Adicione sua primeira conta de autenticação de duas etapas para começar.
               </p>
               <Button 
                 onClick={() => setAddDialogOpen(true)}
-                className="bg-primary-gradient hover:shadow-lg transition-all duration-300"
+                className="bg-primary-gradient hover:shadow-lg transition-all duration-300 hover:scale-105 hover-glow relative overflow-hidden group"
               >
-                <Plus className="h-4 w-4 mr-2" />
-                Adicionar Primeira Conta
+                <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-1000" />
+                <Plus className="h-4 w-4 mr-2 relative z-10" />
+                <span className="relative z-10">Adicionar Primeira Conta</span>
               </Button>
             </Card>
           ) : (
-            accounts.map((account) => (
-              <TOTPCard
+            accounts.map((account, index) => (
+              <div
                 key={account.id}
-                account={account}
-                onDelete={deleteAccount}
-              />
+                className="animate-fade-in"
+                style={{ animationDelay: `${0.6 + index * 0.1}s` }}
+              >
+                <TOTPCard
+                  account={account}
+                  onDelete={deleteAccount}
+                />
+              </div>
             ))
           )}
         </div>
 
         {/* Footer */}
-        <div className="text-center mt-12 text-sm text-muted-foreground">
-          <p>
-            🔐 Seus dados são armazenados localmente no seu dispositivo
+        <div className="text-center mt-16 text-sm text-muted-foreground animate-fade-in" style={{ animationDelay: '0.8s' }}>
+          <p className="flex items-center justify-center gap-2 text-lg">
+            🔐 
+            <span className="animate-shimmer bg-gradient-to-r from-muted-foreground via-primary to-muted-foreground bg-clip-text text-transparent bg-[length:200%_100%]">
+              Seus dados são armazenados localmente no seu dispositivo
+            </span>
           </p>
         </div>
       </div>

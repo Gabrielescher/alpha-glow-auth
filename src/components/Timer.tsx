@@ -23,48 +23,63 @@ export function Timer({ period = 30, onTick }: TimerProps) {
   }, [period, onTick]);
 
   const progress = ((period - remainingSeconds) / period) * 100;
-  const circumference = 2 * Math.PI * 20;
-  const strokeDasharray = circumference;
-  const strokeDashoffset = circumference - (progress / 100) * circumference;
+  const offset = ((remainingSeconds / period) * 100);
+  const timeLeft = remainingSeconds;
 
   return (
-    <div className="relative w-12 h-12 flex items-center justify-center">
-      <svg className="w-12 h-12 -rotate-90" viewBox="0 0 44 44">
-        <circle
-          cx="22"
-          cy="22"
-          r="20"
-          fill="none"
-          stroke="currentColor"
-          strokeWidth="2"
-          className="text-muted"
-          opacity="0.2"
-        />
-        <circle
-          cx="22"
-          cy="22"
-          r="20"
-          fill="none"
-          stroke="url(#timer-gradient)"
-          strokeWidth="2"
-          strokeLinecap="round"
-          style={{
-            strokeDasharray,
-            strokeDashoffset,
-            transition: 'stroke-dashoffset 1s ease-in-out'
-          }}
-        />
-        <defs>
-          <linearGradient id="timer-gradient" x1="0%" y1="0%" x2="100%" y2="100%">
-            <stop offset="0%" stopColor="hsl(var(--primary))" />
-            <stop offset="100%" stopColor="hsl(280 85% 70%)" />
-          </linearGradient>
-        </defs>
-      </svg>
-      <div className="absolute inset-0 flex items-center justify-center">
-        <span className="text-xs font-medium text-muted-foreground">
-          {remainingSeconds}
-        </span>
+    <div className="flex items-center gap-2">
+      <div className="relative w-10 h-10 group">
+        <svg className="w-10 h-10 -rotate-90 transition-all duration-300 group-hover:scale-110" viewBox="0 0 36 36">
+          {/* Background circle */}
+          <circle
+            cx="18"
+            cy="18"
+            r="16"
+            fill="none"
+            className="stroke-primary/20"
+            strokeWidth="2"
+          />
+          {/* Progress circle */}
+          <circle
+            cx="18"
+            cy="18"
+            r="16"
+            fill="none"
+            className="stroke-primary drop-shadow-sm"
+            strokeWidth="3"
+            strokeDasharray="100"
+            strokeDashoffset={offset}
+            strokeLinecap="round"
+            style={{
+              transition: 'stroke-dashoffset 0.1s linear',
+              filter: timeLeft <= 5 ? 'drop-shadow(0 0 8px hsl(var(--primary)))' : 'none',
+            }}
+          />
+          {/* Glow effect for low time */}
+          {timeLeft <= 5 && (
+            <circle
+              cx="18"
+              cy="18"
+              r="16"
+              fill="none"
+              className="stroke-primary animate-pulse-glow"
+              strokeWidth="1"
+              strokeDasharray="100"
+              strokeDashoffset={offset}
+              strokeLinecap="round"
+              opacity="0.6"
+            />
+          )}
+        </svg>
+        <div className="absolute inset-0 flex items-center justify-center">
+          <span className={`text-sm font-bold transition-all duration-300 ${timeLeft <= 5 ? 'text-destructive animate-bounce-gentle' : 'text-primary'}`}>
+            {timeLeft}
+          </span>
+        </div>
+        {/* Pulse indicator for refresh */}
+        {timeLeft === period && (
+          <div className="absolute inset-0 rounded-full bg-primary/20 animate-pulse-glow" />
+        )}
       </div>
     </div>
   );

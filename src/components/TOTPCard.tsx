@@ -44,15 +44,15 @@ export function TOTPCard({ account, onDelete }: TOTPCardProps) {
   };
 
   return (
-    <Card className="p-4 hover:shadow-lg transition-all duration-300 bg-gradient-to-br from-card to-accent/10 border-primary/20">
+    <Card className="group p-4 hover-lift hover-glow transition-all duration-500 bg-gradient-to-br from-card via-card to-accent/5 border-primary/20 hover:border-primary/40 animate-fade-in backdrop-blur-sm">
       <div className="flex items-center justify-between mb-3">
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-2 mb-1">
-            <h3 className="font-semibold text-card-foreground truncate">
+            <h3 className="font-semibold text-card-foreground truncate group-hover:text-gradient-primary transition-all duration-300">
               {account.name}
             </h3>
             {account.issuer && (
-              <Badge variant="secondary" className="text-xs">
+              <Badge variant="secondary" className="text-xs group-hover:animate-bounce-gentle">
                 {account.issuer}
               </Badge>
             )}
@@ -67,7 +67,7 @@ export function TOTPCard({ account, onDelete }: TOTPCardProps) {
             variant="ghost"
             size="sm"
             onClick={() => onDelete(account.id)}
-            className="text-destructive hover:text-destructive hover:bg-destructive/10"
+            className="text-destructive hover:text-destructive hover:bg-destructive/10 hover:scale-110 transition-all duration-200"
           >
             <Trash2 className="h-4 w-4" />
           </Button>
@@ -77,10 +77,17 @@ export function TOTPCard({ account, onDelete }: TOTPCardProps) {
       <div className="flex items-center justify-between">
         <div className="flex-1">
           <div 
-            className="text-3xl font-mono font-bold text-primary tracking-wider cursor-pointer select-all hover:bg-primary/10 rounded-md px-2 py-1 transition-colors"
+            className={`text-3xl font-mono font-bold text-primary tracking-wider cursor-pointer select-all hover:bg-primary/10 rounded-md px-3 py-2 transition-all duration-300 hover:scale-105 ${copied ? 'copy-success' : ''} relative overflow-hidden group-hover:animate-shimmer`}
             onClick={copyToClipboard}
+            style={copied ? {
+              background: 'linear-gradient(90deg, hsl(var(--primary)), hsl(var(--success)), hsl(var(--primary)))',
+              backgroundSize: '200% 100%'
+            } : {}}
           >
-            {code.match(/.{1,3}/g)?.join(' ') || code}
+            <span className="relative z-10">
+              {code.match(/.{1,3}/g)?.join(' ') || code}
+            </span>
+            <div className="absolute inset-0 bg-gradient-to-r from-transparent via-primary/20 to-transparent translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-1000" />
           </div>
         </div>
         
@@ -88,10 +95,10 @@ export function TOTPCard({ account, onDelete }: TOTPCardProps) {
           variant="ghost"
           size="sm"
           onClick={copyToClipboard}
-          className="text-primary hover:text-primary hover:bg-primary/10"
+          className={`text-primary hover:text-primary hover:bg-primary/10 transition-all duration-300 hover:scale-110 ${copied ? 'bg-success hover:bg-success' : ''}`}
         >
           {copied ? (
-            <Check className="h-4 w-4" />
+            <Check className="h-4 w-4 animate-bounce-gentle" />
           ) : (
             <Copy className="h-4 w-4" />
           )}
