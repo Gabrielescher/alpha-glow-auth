@@ -1,10 +1,11 @@
 import { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
-import { Plus, Shield, Download, Upload, Sparkles } from 'lucide-react';
+import { Plus, Shield, Download, Upload, Sparkles, LogOut } from 'lucide-react';
 import { TOTPCard } from '@/components/TOTPCard';
 import { AddAccountDialog } from '@/components/AddAccountDialog';
 import { ThemeToggle } from '@/components/ThemeToggle';
+import { useAuth } from '@/hooks/useAuth';
 import { type TOTPAccount } from '@/lib/totp';
 import { toast } from '@/hooks/use-toast';
 
@@ -16,6 +17,7 @@ const generateId = () => Date.now().toString(36) + Math.random().toString(36).su
 const Index = () => {
   const [accounts, setAccounts] = useState<TOTPAccount[]>([]);
   const [addDialogOpen, setAddDialogOpen] = useState(false);
+  const { user, signOut } = useAuth();
 
   // Carregar contas do localStorage
   useEffect(() => {
@@ -47,6 +49,14 @@ const Index = () => {
     toast({
       title: "Conta removida",
       description: "A conta foi removida com sucesso.",
+    });
+  };
+
+  const handleSignOut = async () => {
+    await signOut();
+    toast({
+      title: "Logout realizado",
+      description: "Você foi desconectado com sucesso.",
     });
   };
 
@@ -103,8 +113,17 @@ const Index = () => {
       </div>
       
       <div className="container mx-auto px-4 py-8 max-w-2xl relative z-10">
-        {/* Theme Toggle */}
-        <div className="absolute top-4 right-4">
+        {/* Theme Toggle and Logout */}
+        <div className="absolute top-4 right-4 flex items-center gap-2">
+          <Button
+            variant="outline"
+            size="icon"
+            onClick={handleSignOut}
+            className="hover-lift hover-glow transition-all duration-300"
+            title="Sair"
+          >
+            <LogOut className="h-4 w-4" />
+          </Button>
           <ThemeToggle />
         </div>
 
@@ -204,11 +223,14 @@ const Index = () => {
 
         {/* Footer */}
         <div className="text-center mt-16 text-sm text-muted-foreground animate-fade-in" style={{ animationDelay: '0.8s' }}>
-          <p className="flex items-center justify-center gap-2 text-lg">
+          <p className="flex items-center justify-center gap-2 text-lg mb-2">
             🔐 
             <span className="animate-shimmer bg-gradient-to-r from-muted-foreground via-primary to-muted-foreground bg-clip-text text-transparent bg-[length:200%_100%]">
               Seus dados são armazenados localmente no seu dispositivo
             </span>
+          </p>
+          <p className="text-sm">
+            Conectado como: <span className="text-primary font-medium">{user?.email}</span>
           </p>
         </div>
       </div>
