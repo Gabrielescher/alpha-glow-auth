@@ -8,10 +8,12 @@ import { Shield, Mail, Lock, User, Eye, EyeOff, Sparkles } from 'lucide-react';
 import { ThemeToggle } from '@/components/ThemeToggle';
 import { useAuth } from '@/hooks/useAuth';
 import { toast } from '@/hooks/use-toast';
+import { supabase } from '@/integrations/supabase/client';
 
 const Auth = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
+  const [mode, setMode] = useState<'signin' | 'signup'>('signin');
   const [formData, setFormData] = useState({
     email: '',
     password: '',
@@ -35,11 +37,16 @@ const Auth = () => {
       const { error } = await signIn(formData.email, formData.password);
       
       if (error) {
+        const msg = (error.message || '').toLowerCase();
+        let description = "Erro ao fazer login. Tente novamente.";
+        if (msg.includes('email not confirmed') || msg.includes('email_not_confirmed')) {
+          description = "Confirme seu email pelo link enviado para entrar.";
+        } else if (msg.includes('invalid login credentials')) {
+          description = "Email ou senha incorretos";
+        }
         toast({
           title: "Erro no login",
-          description: error.message === 'Invalid login credentials' 
-            ? "Email ou senha incorretos" 
-            : "Erro ao fazer login. Tente novamente.",
+          description,
           variant: "destructive",
         });
       } else {
@@ -97,8 +104,10 @@ const Auth = () => {
       } else {
         toast({
           title: "Conta criada!",
-          description: "Sua conta foi criada com sucesso. Faça login para continuar.",
+          description: "Enviamos um link de confirmação para seu email. Confirme para entrar.",
         });
+        setMode('signin');
+        setFormData(prev => ({ ...prev, password: '', confirmPassword: '' }));
       }
     } catch (error) {
       toast({
@@ -108,6 +117,32 @@ const Auth = () => {
       });
     } finally {
       setIsLoading(false);
+    }
+  };
+
+  const handleResend = async () => {
+    if (!formData.email) {
+      toast({
+        title: "Informe seu email",
+        description: "Digite o email cadastrado para reenviar a confirmação.",
+      });
+      return;
+    }
+    const { data, error } = await supabase.auth.resend({
+      type: 'signup',
+      email: formData.email,
+    });
+    if (error) {
+      toast({
+        title: "Falha ao reenviar",
+        description: "Não foi possível reenviar o email. Tente novamente.",
+        variant: "destructive",
+      });
+    } else {
+      toast({
+        title: "Confirmação reenviada",
+        description: "Cheque sua caixa de entrada (e a pasta de spam).",
+      });
     }
   };
 
@@ -153,7 +188,7 @@ const Auth = () => {
             </CardDescription>
           </CardHeader>
           <CardContent>
-            <Tabs defaultValue="signin" className="w-full">
+            <Tabs value={mode} onValueChange={(v) => setMode(v as 'signin' | 'signup')} className="w-full">
               <TabsList className="grid w-full grid-cols-2 mb-6">
                 <TabsTrigger value="signin" className="text-sm">
                   Entrar
@@ -232,6 +267,19 @@ const Auth = () => {
                       </>
                     )}
                   </Button>
+                  <p className="text-xs text-muted-foreground text-center mt-2">
+                    Se acabou de se cadastrar, confirme seu e-mail antes de entrar.
+                  </p>
+                  <div className="text-center">
+                    <Button
+                      type="button"
+                      variant="link"
+                      className="px-0"
+                      onClick={handleResend}
+                    >
+                      Reenviar e-mail de confirmação
+                    </Button>
+                </div>
                 </form>
               </TabsContent>
 
