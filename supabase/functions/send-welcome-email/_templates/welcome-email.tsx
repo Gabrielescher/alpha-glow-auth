@@ -93,6 +93,35 @@ export const WelcomeEmail = ({
           </ol>
         </Section>
 
+        <Section style={section}>
+          <Text style={sectionTitle}>⚙️ Configuração de Webhook</Text>
+          <Text style={text}>
+            Para integrar o Alpha com outros serviços, você pode configurar webhooks:
+          </Text>
+          <ul style={list}>
+            <li style={listItem}>🔗 URL do Webhook: <code style={inlineCode}>{supabase_url}/functions/v1/send-welcome-email</code></li>
+            <li style={listItem}>📨 Método: POST</li>
+            <li style={listItem}>🔐 Autenticação: Bearer token necessário</li>
+            <li style={listItem}>📋 Eventos: signup, login, password_recovery</li>
+          </ul>
+          <Text style={smallText}>
+            Configure este webhook no painel de administração do Supabase em Auth → Templates → Email Templates.
+          </Text>
+        </Section>
+
+        <Section style={section}>
+          <Text style={sectionTitle}>🛠️ Recursos Avançados do Alpha</Text>
+          <Text style={text}>Explore todas as funcionalidades:</Text>
+          <ul style={list}>
+            <li style={listItem}>🏷️ <strong>Organização:</strong> Agrupe códigos por categoria e issuer</li>
+            <li style={listItem}>🔄 <strong>Sincronização:</strong> Mantenha códigos atualizados em tempo real</li>
+            <li style={listItem}>🌙 <strong>Modo Escuro:</strong> Interface adaptável para uso noturno</li>
+            <li style={listItem}>📱 <strong>PWA:</strong> Instale como app nativo no dispositivo</li>
+            <li style={listItem}>🔍 <strong>Busca:</strong> Encontre códigos rapidamente</li>
+            <li style={listItem}>⏰ <strong>Timer Visual:</strong> Contador regressivo para cada código</li>
+          </ul>
+        </Section>
+
         <Hr style={hr} />
 
         <Text style={footer}>
@@ -214,4 +243,15 @@ const footer = {
 const link = {
   color: '#007ee6',
   textDecoration: 'underline',
+}
+
+const inlineCode = {
+  backgroundColor: '#f1f5f9',
+  border: '1px solid #e2e8f0',
+  borderRadius: '4px',
+  color: '#334155',
+  fontSize: '14px',
+  fontFamily: 'Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace',
+  padding: '2px 6px',
+  wordBreak: 'break-all' as const,
 }
