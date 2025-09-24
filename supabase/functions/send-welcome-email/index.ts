@@ -7,12 +7,28 @@ import { WelcomeEmail } from './_templates/welcome-email.tsx'
 const resend = new Resend(Deno.env.get('RESEND_API_KEY') as string)
 const hookSecret = Deno.env.get('SEND_EMAIL_HOOK_SECRET') as string
 
+const corsHeaders = {
+  'Access-Control-Allow-Origin': '*',
+  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
+}
+
 Deno.serve(async (req) => {
   console.log('Welcome email function called')
   
+  // Handle CORS preflight requests
+  if (req.method === 'OPTIONS') {
+    return new Response(null, { headers: corsHeaders })
+  }
+  
   if (req.method !== 'POST') {
     console.log('Method not allowed:', req.method)
-    return new Response('Method not allowed', { status: 405 })
+    return new Response(
+      JSON.stringify({ error: 'Method not allowed' }), 
+      { 
+        status: 405,
+        headers: { 'Content-Type': 'application/json', ...corsHeaders }
+      }
+    )
   }
 
   try {
@@ -73,7 +89,7 @@ Deno.serve(async (req) => {
       JSON.stringify({ success: true, emailId: data?.id }),
       {
         status: 200,
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 'Content-Type': 'application/json', ...corsHeaders },
       }
     )
   } catch (error) {
@@ -88,7 +104,7 @@ Deno.serve(async (req) => {
       }),
       {
         status: 500,
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 'Content-Type': 'application/json', ...corsHeaders },
       }
     )
   }
