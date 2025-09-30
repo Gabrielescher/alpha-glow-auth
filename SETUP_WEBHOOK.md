@@ -50,14 +50,27 @@ Cadastre um novo usuário no app e verifique:
 - Verifique se a URL do webhook está correta
 - Teste a função diretamente via curl
 
+## ⚠️ Configuração Obrigatória do Resend
+
+### Validar Domínio no Resend
+**IMPORTANTE**: Antes de enviar emails, você DEVE:
+1. Acessar https://resend.com/domains
+2. Adicionar e validar seu domínio
+3. OU usar o domínio padrão: `onboarding@resend.dev` (já validado)
+
+Se você não validar o domínio, os emails NÃO serão enviados!
+
 ## 📋 Checklist de Configuração
 
-- [ ] URLs configuradas no Supabase Auth
-- [ ] RESEND_API_KEY adicionada aos secrets
+- [ ] Conta criada no Resend (https://resend.com)
+- [ ] API Key criada (https://resend.com/api-keys)
+- [ ] RESEND_API_KEY adicionada aos secrets do Supabase
+- [ ] Domínio validado no Resend OU usando onboarding@resend.dev
 - [ ] SEND_EMAIL_HOOK_SECRET configurado
-- [ ] Webhook ativado no email template
-- [ ] Domínio validado no Resend (se necessário)
-- [ ] Teste de cadastro realizado
+- [ ] URLs configuradas no Supabase Auth
+- [ ] Webhook ativado no email template (Confirm signup)
+- [ ] Webhook URL configurada corretamente
+- [ ] Teste de cadastro realizado e email recebido
 
 ## 🔗 Links Úteis
 
