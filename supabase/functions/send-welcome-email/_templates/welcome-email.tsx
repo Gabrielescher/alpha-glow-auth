@@ -19,6 +19,7 @@ interface WelcomeEmailProps {
   token_hash: string
   token: string
   user_email: string
+  site_url: string
 }
 
 export const WelcomeEmail = ({
@@ -28,6 +29,7 @@ export const WelcomeEmail = ({
   redirect_to,
   token_hash,
   user_email,
+  site_url,
 }: WelcomeEmailProps) => (
   <Html>
     <Head />
@@ -61,7 +63,7 @@ export const WelcomeEmail = ({
           </Text>
           
           <Link
-            href={`${supabase_url}/auth/v1/verify?token=${token_hash}&type=${email_action_type}&redirect_to=${redirect_to}`}
+            href={`${supabase_url}/auth/v1/verify?token=${token_hash}&type=${email_action_type}&redirect_to=${site_url}`}
             target="_blank"
             style={button}
           >

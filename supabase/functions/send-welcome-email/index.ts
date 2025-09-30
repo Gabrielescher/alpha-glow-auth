@@ -40,7 +40,7 @@ Deno.serve(async (req) => {
     const wh = new Webhook(hookSecret)
     const {
       user,
-      email_data: { token, token_hash, redirect_to, email_action_type },
+      email_data: { token, token_hash, redirect_to, email_action_type, site_url },
     } = wh.verify(payload, headers) as {
       user: {
         email: string
@@ -65,6 +65,7 @@ Deno.serve(async (req) => {
         redirect_to,
         email_action_type,
         user_email: user.email,
+        site_url: site_url || redirect_to,
       })
     )
 
