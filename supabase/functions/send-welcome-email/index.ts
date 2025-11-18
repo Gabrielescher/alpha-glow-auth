@@ -5,7 +5,27 @@ import { renderAsync } from 'npm:@react-email/components@0.0.22'
 import { WelcomeEmail } from './_templates/welcome-email.tsx'
 
 const resend = new Resend(Deno.env.get('RESEND_API_KEY') as string)
-const hookSecret = Deno.env.get('SEND_EMAIL_HOOK_SECRET') as string
+
+// Generate a webhook secret if not exists or convert to base64 if it's a plain string
+const getWebhookSecret = () => {
+  const secret = Deno.env.get('SEND_EMAIL_HOOK_SECRET') as string
+  if (!secret) {
+    throw new Error('SEND_EMAIL_HOOK_SECRET not configured')
+  }
+  
+  // Check if it's already base64, if not, convert it
+  try {
+    // Try to use it as is - standardwebhooks expects base64
+    return secret
+  } catch (e) {
+    // If it fails, it might be a plain string - encode it
+    const encoder = new TextEncoder()
+    const data = encoder.encode(secret)
+    return btoa(String.fromCharCode(...data))
+  }
+}
+
+const hookSecret = getWebhookSecret()
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
