@@ -1,10 +1,20 @@
 import React from 'npm:react@18.3.1'
 import { Webhook } from 'https://esm.sh/standardwebhooks@1.0.0'
-import { Resend } from 'npm:resend@4.0.0'
 import { renderAsync } from 'npm:@react-email/components@0.0.22'
 import { WelcomeEmail } from './_templates/welcome-email.tsx'
+import { SMTPClient } from 'https://deno.land/x/denomailer@1.6.0/mod.ts'
 
-const resend = new Resend(Deno.env.get('RESEND_API_KEY') as string)
+const smtpClient = new SMTPClient({
+  connection: {
+    hostname: Deno.env.get('SMTP_HOST') as string,
+    port: parseInt(Deno.env.get('SMTP_PORT') || '587'),
+    tls: true,
+    auth: {
+      username: Deno.env.get('SMTP_USER') as string,
+      password: Deno.env.get('SMTP_PASS') as string,
+    },
+  },
+})
 
 // Generate a webhook secret if not exists or convert to base64 if it's a plain string
 const getWebhookSecret = () => {
@@ -91,23 +101,18 @@ Deno.serve(async (req) => {
 
     console.log('Email template rendered')
 
-    // Send email using Resend
-    const { data, error } = await resend.emails.send({
-      from: 'Alpha Authenticator <onboarding@resend.dev>',
-      to: [user.email],
+    // Send email using SMTP
+    await smtpClient.send({
+      from: Deno.env.get('SMTP_FROM') || 'Alpha Authenticator <noreply@alpha.app>',
+      to: user.email,
       subject: '🎉 Bem-vindo ao Alpha - Confirme sua conta',
       html,
     })
 
-    if (error) {
-      console.error('Resend error:', error)
-      throw error
-    }
-
-    console.log('Email sent successfully:', data)
+    console.log('Email sent successfully via SMTP')
 
     return new Response(
-      JSON.stringify({ success: true, emailId: data?.id }),
+      JSON.stringify({ success: true }),
       {
         status: 200,
         headers: { 'Content-Type': 'application/json', ...corsHeaders },
